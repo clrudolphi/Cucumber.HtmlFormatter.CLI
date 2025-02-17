@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35201.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlFormatterCli", "Cli\HtmlFormatterCli.csproj", "{D22BDF2A-6E37-4F8D-A791-425A301539B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlFormatterCLI.Tests", "HtmlFormatterCLI.Tests\HtmlFormatterCLI.Tests.csproj", "{108FDF33-3DC2-420E-9EEB-54FA6D9688F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{3114CA9B-7850-423C-B7A9-ADC3E90D5044}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D22BDF2A-6E37-4F8D-A791-425A301539B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22BDF2A-6E37-4F8D-A791-425A301539B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22BDF2A-6E37-4F8D-A791-425A301539B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22BDF2A-6E37-4F8D-A791-425A301539B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{108FDF33-3DC2-420E-9EEB-54FA6D9688F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{108FDF33-3DC2-420E-9EEB-54FA6D9688F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{108FDF33-3DC2-420E-9EEB-54FA6D9688F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{108FDF33-3DC2-420E-9EEB-54FA6D9688F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2F6EF43-E376-437C-A24C-49DB9FA6D9EF}
+	EndGlobalSection
+EndGlobal
