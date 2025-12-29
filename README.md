@@ -1,12 +1,5 @@
 # Cucumber.HtmlFormatter.CLI
 
-This is the description of what the code block changes:
-Add CLI usage, arguments, options, examples, exit codes, and notes to README.md for user documentation.
-
-This is the code block that represents the suggested code change:
-
-# Cucumber.HtmlFormatter.CLI
-
 A command-line tool to convert NDJSON files (Cucumber messages) into HTML reports.
 
 ## Usage
