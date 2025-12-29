@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Cucumber.HtmlFormatter;
 using Cucumber.Messages;
+using HtmlFormatterCli;
 using Io.Cucumber.Messages.Types;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
@@ -69,11 +70,11 @@ internal class Program
                     var streamSerializerActionAsync = new Func<StreamWriter, Envelope, Task>(
                         async (sw, e) =>
                     {
-                        var s = HtmlFormatter.NdjsonSerializer.Serialize(e);
+                        var s = NdjsonSerializer.Serialize(e);
                         await sw.WriteAsync(s);
                     });
 
-                    using var ndjsonReader = new NdjsonMessageReader(inputStream, HtmlFormatter.NdjsonSerializer.Deserialize);
+                    using var ndjsonReader = new NdjsonMessageReader(inputStream, NdjsonSerializer.Deserialize);
                     using var htmlFormatter = new MessagesToHtmlWriter(outputStreamWriter, streamSerializerActionAsync);
 
                     foreach (var message in ndjsonReader)
