@@ -25,16 +25,21 @@ internal class Program
             "--outputDirectory",
             "The output directory. If not specified, the output files will be created in the same directory as the input files.");
 
+        var mergeOption = new Option<string>(
+            "--mergedFile",
+            "If specified, all input files will be merged into a single output file.");
+
         var rootCommand = new RootCommand
         {
             inputFilesArgument,
-            outputDirectoryOption
+            outputDirectoryOption,
+            mergeOption
         };
 
         rootCommand.Description = "Converts NDJSON files to HTML files.";
 
         rootCommand.SetHandler(
-            async (string[] inputFiles, string outputDirectory) =>
+            async (string[] inputFiles, string outputDirectory, string mergedFileName) =>
         {
             int exitCode = 0;
 
@@ -54,8 +59,30 @@ internal class Program
                     exitCode = -1;
                 }
             }
+            filesToProcess = filesToProcess.Distinct().ToList();
+            string tempNdjsonPath = null;
+            var isMerge = !string.IsNullOrEmpty(mergedFileName);    
+            if (isMerge)
+            {
+                var tempFileName = Path.GetFileNameWithoutExtension(mergedFileName);
+                tempNdjsonPath = Path.Combine(Path.GetTempPath(), $"{tempFileName}.ndjson");
+                using (var tempWriter = new StreamWriter(tempNdjsonPath))
+                {
+                    foreach (var file in filesToProcess)
+                    {
+                        foreach (var line in File.ReadLines(file))
+                        {
+                            if (!string.IsNullOrWhiteSpace(line))
+                            {
+                                tempWriter.WriteLine(line);
+                            }
+                        }
+                    }
+                }
+                filesToProcess = new List<string> { tempNdjsonPath };
+            }
             // iterate over each file and process it
-            foreach (var file in filesToProcess.Distinct())
+            foreach (var file in filesToProcess)
             {
                 try
                 {
@@ -95,11 +122,17 @@ internal class Program
                     exitCode = -1;
                 }
             }
+            // Clean up temp NDJSON file if used
+            if (isMerge && tempNdjsonPath != null)
+            {
+                try { File.Delete(tempNdjsonPath); } catch { /* ignore errors */ }
+            }
 
             Environment.ExitCode = exitCode; // IF an error occurred, this will be set to -1
         },
         inputFilesArgument,
-        outputDirectoryOption);
+        outputDirectoryOption,
+        mergeOption);
 
         rootCommand.InvokeAsync(args).Wait();
         return Environment.ExitCode;

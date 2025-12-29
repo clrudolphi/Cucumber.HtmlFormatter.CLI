@@ -214,5 +214,43 @@ namespace HtmlFormatterCLI.Tests
                 }
             }
         }
+
+        [TestMethod]
+        public void TransformsMultipleFilesWithMergeOption()
+        {
+            using (new AssertionScope())
+            {
+                var testLocation = TestHelpers.CreateTempDirectory();
+                var working = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                try
+                {
+                    // Use real sample files from SampleData/good
+                    var sourceDir = Path.Combine(working, "SampleData/good");
+                    var file1 = Path.Combine(sourceDir, "minimal.ndjson");
+                    var file2 = Path.Combine(sourceDir, "SubDirectory/Hooks.ndjson");
+                    var destFile1 = Path.Combine(testLocation, "minimal.ndjson");
+                    var destFile2 = Path.Combine(testLocation, "Hooks.ndjson");
+                    File.Copy(file1, destFile1);
+                    File.Copy(file2, destFile2);
+                    var mergedFilename = "merged.html";
+
+                    var commandLine = $"{TestHelpers.QuoteString(destFile1)} {TestHelpers.QuoteString(destFile2)} --mergedFile {TestHelpers.QuoteString(mergedFilename)}  --outputDirectory {TestHelpers.QuoteString(testLocation)}";
+                    (int exitCode, string output) = TestHelpers.RunCommandLine("HtmlFormatterCli.exe", commandLine, working);
+                    exitCode.Should().Be(0);
+                    output.Should().Contain("Conversion of");
+
+                    // Only one HTML file should be produced (from merged ndjson)
+                    var htmlFiles = Directory.GetFiles(testLocation, "*.html");
+                    htmlFiles.Length.Should().Be(1);
+                    var htmlContent = File.ReadAllText(htmlFiles[0]);
+                    htmlContent.Should().Contain("Feature"); // Should contain at least one feature
+                    htmlContent.Should().Contain("Hook");    // Should contain hook info from Hooks.ndjson
+                }
+                finally
+                {
+                    TestHelpers.DeleteTempDirectory(testLocation);
+                }
+            }
+        }
     }
 }
