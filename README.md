@@ -5,7 +5,7 @@ A command-line tool to convert NDJSON files (Cucumber messages) into HTML report
 ## Usage
 
 ```
-HtmlFormatterCli.exe [inputFiles] [--outputDirectory <dir>] [--merge]
+HtmlFormatterCli.exe [inputFiles] [--outputDirectory <dir>] [--mergedFile <fileName>]
 ```
 
 ### Arguments
