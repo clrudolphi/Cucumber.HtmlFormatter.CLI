@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Cucumber.HtmlFormatter;
 using Cucumber.Messages;
 using Io.Cucumber.Messages.Types;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -31,7 +32,8 @@ internal class Program
 
         rootCommand.Description = "Converts NDJSON files to HTML files.";
 
-        rootCommand.SetHandler( (string[] inputFiles, string outputDirectory) =>
+        rootCommand.SetHandler(
+            async (string[] inputFiles, string outputDirectory) =>
         {
             int exitCode = 0;
 
@@ -49,7 +51,7 @@ internal class Program
                         + Environment.NewLine +
                         ex.Message);
                     exitCode = -1;
-                };
+                }
             }
             // iterate over each file and process it
             foreach (var file in filesToProcess.Distinct())
@@ -64,20 +66,21 @@ internal class Program
                     using var outputStreamWriter = new StreamWriter(outFile);
                     using var inputStream = File.OpenText(file).BaseStream;
 
-                    var streamSerializerAction = new Action<StreamWriter, Envelope>((sw, e) =>
+                    var streamSerializerActionAsync = new Func<StreamWriter, Envelope, Task>(
+                        async (sw, e) =>
                     {
                         var s = HtmlFormatter.NdjsonSerializer.Serialize(e);
-                        sw.Write(s);
+                        await sw.WriteAsync(s);
                     });
 
                     using var ndjsonReader = new NdjsonMessageReader(inputStream, HtmlFormatter.NdjsonSerializer.Deserialize);
-                    using var htmlFormatter = new HtmlFormatter.MessagesToHtmlWriter(outputStreamWriter, streamSerializerAction);
+                    using var htmlFormatter = new MessagesToHtmlWriter(outputStreamWriter, streamSerializerActionAsync);
 
                     foreach (var message in ndjsonReader)
                     {
                         if (message == null || EnvelopeIsEmpty(message))
                             throw new InvalidDataException("Empty Envelope or non-Ndjson Json data encountered in {file}.");
-                        htmlFormatter.Write(message);
+                        await htmlFormatter.WriteAsync(message);
                     }
 
                     Console.WriteLine($"Conversion of {file} completed successfully.");
@@ -90,7 +93,7 @@ internal class Program
 
                     exitCode = -1;
                 }
-            };
+            }
 
             Environment.ExitCode = exitCode; // IF an error occurred, this will be set to -1
         },
@@ -100,6 +103,7 @@ internal class Program
         rootCommand.InvokeAsync(args).Wait();
         return Environment.ExitCode;
     }
+
 
     private static bool EnvelopeIsEmpty(Envelope message)
     {
